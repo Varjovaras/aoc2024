@@ -6,7 +6,7 @@ fn main() {
     let file_path = &args[1];
 
     let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
-    let vec: Vec<&str> = contents.split("\n").collect();
+    let vec: Vec<&str> = contents.lines().collect();
     let vec_tuples: Vec<(i32, i32)> = vec
         .iter()
         .filter_map(|s| {
@@ -26,19 +26,17 @@ fn main() {
         vec2.push(second);
     }
 
-    vec1.sort();
-    vec2.sort();
+    let mut similarity_score = 0;
 
-    let vec_tuples: Vec<(i32, i32)> = vec1
-        .iter()
-        .zip(vec2.iter())
-        .map(|(a, b)| (*a, *b))
-        .collect();
-
-    let mut total = 0;
-    for tuple in vec_tuples {
-        total += tuple.0.abs_diff(tuple.1);
+    for i in &vec1 {
+        let mut occurences = 0;
+        for j in &vec2 {
+            if j == i {
+                occurences += 1;
+            }
+        }
+        similarity_score += i * occurences;
     }
 
-    dbg!(total);
+    println!("{}", similarity_score);
 }
