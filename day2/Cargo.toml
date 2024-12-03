@@ -1,10 +1,6 @@
 [package]
-name = "aoc2024"
+name = "day2"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-
-[workspace]
-
-members = ["day1", "day2"]
