@@ -7,4 +7,4 @@ edition = "2021"
 
 [workspace]
 
-members = ["day1", "day2"]
+members = ["day1", "day2", "day3"]
