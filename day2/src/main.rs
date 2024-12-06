@@ -41,7 +41,6 @@ fn is_report_safe(report: &[i32]) -> bool {
 
 fn is_report_fixable(report: &[i32]) -> bool {
     for i in 0..report.len() {
-        // Create a new vector without the element at index i
         let potentially_fixed_report: Vec<i32> = report
             .iter()
             .enumerate()
