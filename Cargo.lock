@@ -9,11 +9,24 @@ version = "0.1.0"
 [[package]]
 name = "day1"
 version = "0.1.0"
+dependencies = [
+ "file_reader",
+]
 
 [[package]]
 name = "day2"
 version = "0.1.0"
+dependencies = [
+ "file_reader",
+]
 
 [[package]]
 name = "day3"
+version = "0.1.0"
+dependencies = [
+ "file_reader",
+]
+
+[[package]]
+name = "file_reader"
 version = "0.1.0"

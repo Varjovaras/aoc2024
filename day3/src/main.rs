@@ -1,10 +1,8 @@
-use std::{char, env, fs};
+use file_reader::read_text_file;
+use std::char;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let file_path = &args[1];
-
-    let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
+    let contents = read_text_file();
     let chars: Vec<char> = contents.chars().collect();
     let mut total = 0;
     for (index, char) in chars.iter().enumerate() {

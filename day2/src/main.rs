@@ -1,11 +1,7 @@
-use std::env;
-use std::fs;
+use file_reader::read_text_file;
 
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let file_path = &args[1];
-
-    let contents = fs::read_to_string(file_path).expect("Should have been able to read the file");
+    let contents = read_text_file();
     let reports: Vec<Vec<i32>> = contents
         .lines()
         .map(|line| {
