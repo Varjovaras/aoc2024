@@ -5,8 +5,28 @@ fn main() {
     let contents = read_text_file();
     let chars: Vec<char> = contents.chars().collect();
     let mut total = 0;
+    let mut allow_multiplying = true;
+
     for (index, char) in chars.iter().enumerate() {
-        if char == &'m'
+        if char == &'d'
+            && chars.get(index + 1) == Some(&'o')
+            && chars.get(index + 2) == Some(&'(')
+            && chars.get(index + 3) == Some(&')')
+        {
+            allow_multiplying = true;
+        }
+        if char == &'d'
+            && chars.get(index + 1) == Some(&'o')
+            && chars.get(index + 2) == Some(&'n')
+            && chars.get(index + 3) == Some(&'\'')
+            && chars.get(index + 4) == Some(&'t')
+            && chars.get(index + 5) == Some(&'(')
+            && chars.get(index + 6) == Some(&')')
+        {
+            allow_multiplying = false
+        }
+        if allow_multiplying
+            && char == &'m'
             && chars.get(index + 1) == Some(&'u')
             && chars.get(index + 2) == Some(&'l')
             && chars.get(index + 3) == Some(&'(')
