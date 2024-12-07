@@ -24,15 +24,15 @@ fn main() {
 }
 
 fn is_do_command(chars: &[char], index: usize) -> bool {
-    chars[index..=index + 3] == ['d', 'o', '(', ')']
+    index + 3 < chars.len() && chars[index..=index + 3] == ['d', 'o', '(', ')']
 }
 
 fn is_dont_command(chars: &[char], index: usize) -> bool {
-    chars[index..=index + 6] == ['d', 'o', 'n', '\'', 't', '(', ')']
+    index + 6 < chars.len() && chars[index..=index + 6] == ['d', 'o', 'n', '\'', 't', '(', ')']
 }
 
 fn is_mul_command(chars: &[char], index: usize) -> bool {
-    chars[index..=index + 2] == ['m', 'u', 'l']
+    index + 2 < chars.len() && chars[index..=index + 2] == ['m', 'u', 'l']
 }
 
 fn increment_total(index: usize, chars: &[char]) -> i32 {
