@@ -10,7 +10,9 @@ fn main() {
 
     for (i, row) in rows.iter().enumerate() {
         for (j, _) in row.iter().enumerate() {
-            total += check_xmases(&rows, i, j);
+            if is_x_shaped_mas(&rows, i, j) {
+                total += 1
+            }
         }
     }
 
@@ -18,89 +20,20 @@ fn main() {
     dbg!(total);
 }
 
-fn check_xmases(rows: &[Vec<char>], i: usize, j: usize) -> i32 {
-    let checks = [
-        is_xmas_right,
-        is_xmas_left,
-        is_xmas_down,
-        is_xmas_up,
-        is_xmas_up_right,
-        is_xmas_up_left,
-        is_xmas_down_left,
-        is_xmas_down_right,
-    ];
-
-    checks.iter().filter(|&&check| check(rows, i, j)).count() as i32
-}
-
-fn is_xmas_left(rows: &[Vec<char>], i: usize, j: usize) -> bool {
-    if j < 4 {
+#[allow(clippy::nonminimal_bool)]
+fn is_x_shaped_mas(rows: &[Vec<char>], i: usize, j: usize) -> bool {
+    if rows[i][j] != 'A' || i == 0 || j == 0 || i + 1 >= rows.len() || j + 1 >= rows[0].len() {
         return false;
     }
 
-    rows[i][j - 4..j] == ['X', 'M', 'A', 'S']
+    let top_left_to_bottom_right =
+        is_mas_forwards_or_backwards(&rows[i - 1][j - 1], &rows[i + 1][j + 1]);
+    let bottom_left_to_top_right =
+        is_mas_forwards_or_backwards(&rows[i + 1][j - 1], &rows[i - 1][j + 1]);
+
+    top_left_to_bottom_right && bottom_left_to_top_right
 }
 
-fn is_xmas_right(rows: &[Vec<char>], i: usize, j: usize) -> bool {
-    if j + 4 > rows[i].len() {
-        return false;
-    }
-
-    rows[i][j..j + 4] == ['X', 'M', 'A', 'S']
-}
-
-fn is_xmas_down(rows: &[Vec<char>], i: usize, j: usize) -> bool {
-    if i + 4 > rows.len() {
-        return false;
-    }
-
-    rows[i][j] == 'X' && rows[i + 1][j] == 'M' && rows[i + 2][j] == 'A' && rows[i + 3][j] == 'S'
-}
-
-fn is_xmas_up(rows: &[Vec<char>], i: usize, j: usize) -> bool {
-    if i < 3 {
-        return false;
-    }
-
-    rows[i][j] == 'X' && rows[i - 1][j] == 'M' && rows[i - 2][j] == 'A' && rows[i - 3][j] == 'S'
-}
-
-fn is_xmas_up_right(rows: &[Vec<char>], i: usize, j: usize) -> bool {
-    if i < 3 || j + 4 > rows[i].len() {
-        return false;
-    }
-    rows[i][j] == 'X'
-        && rows[i - 1][j + 1] == 'M'
-        && rows[i - 2][j + 2] == 'A'
-        && rows[i - 3][j + 3] == 'S'
-}
-
-fn is_xmas_up_left(rows: &[Vec<char>], i: usize, j: usize) -> bool {
-    if i < 3 || j < 4 {
-        return false;
-    }
-    rows[i][j] == 'X'
-        && rows[i - 1][j - 1] == 'M'
-        && rows[i - 2][j - 2] == 'A'
-        && rows[i - 3][j - 3] == 'S'
-}
-
-fn is_xmas_down_left(rows: &[Vec<char>], i: usize, j: usize) -> bool {
-    if i + 4 > rows.len() || j < 4 {
-        return false;
-    }
-    rows[i][j] == 'X'
-        && rows[i + 1][j - 1] == 'M'
-        && rows[i + 2][j - 2] == 'A'
-        && rows[i + 3][j - 3] == 'S'
-}
-
-fn is_xmas_down_right(rows: &[Vec<char>], i: usize, j: usize) -> bool {
-    if i + 4 > rows.len() || j + 4 > rows[i].len() {
-        return false;
-    }
-    rows[i][j] == 'X'
-        && rows[i + 1][j + 1] == 'M'
-        && rows[i + 2][j + 2] == 'A'
-        && rows[i + 3][j + 3] == 'S'
+fn is_mas_forwards_or_backwards(first: &char, second: &char) -> bool {
+    first == &'S' && second == &'M' || first == &'M' && second == &'S'
 }
