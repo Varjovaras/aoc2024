@@ -4,15 +4,15 @@ use file_reader::read_text_file;
 
 fn main() {
     let contents = read_text_file();
-    let mut rows: Vec<Vec<char>> = contents
+    let mut grid: Vec<Vec<char>> = contents
         .lines()
         .map(|line| line.chars().collect())
         .collect();
 
-    let start_sq: Option<(usize, usize)> = rows.iter().enumerate().find_map(|(i, row)| {
+    let arrow_coordinates: Option<(usize, usize)> = grid.iter().enumerate().find_map(|(i, row)| {
         row.iter().enumerate().find_map(
             |(j, char)| {
-                if is_guard(char) {
+                if is_arrow(char) {
                     Some((i, j))
                 } else {
                     None
@@ -21,47 +21,88 @@ fn main() {
         )
     });
 
-    let (mut x, mut y) = start_sq.unwrap();
+    let (mut x, mut y) = arrow_coordinates.unwrap();
 
     loop {
-        move_arrow(x, y, &rows);
-        if next_move_is_out_of_bounds(x, y, &rows) {
+        dbg!(x);
+        dbg!(y);
+        dbg!(grid[x][y]);
+        if next_move_is_out_of_bounds(x, y, &grid) {
             break;
         }
+        if move_arrow(x, y, &grid) {
+            match grid[x][y] {
+                '^' => {
+                    grid[x - 1][y] = '^';
+                    grid[x][y] = 'X';
+                    x -= 1;
+                }
+                '>' => {
+                    grid[x][y + 1] = '>';
+                    grid[x][y] = 'X';
+                    y += 1;
+                }
+                'v' => {
+                    grid[x + 1][y] = 'v';
+                    grid[x][y] = 'X';
+                    x += 1;
+                }
+                '<' => {
+                    grid[x][y - 1] = '<';
+                    grid[x][y] = 'X';
+                    y -= 1;
+                }
+                _ => {
+                    panic!("??")
+                }
+            }
+        }
     }
+    println!("{:?}", count_number_of_X(&grid));
 }
 
-fn next_move_is_out_of_bounds(x: usize, y: usize, rows: &[Vec<char>]) -> bool {
-    todo!()
-}
-
-fn move_arrow(x: usize, y: usize, rows: &[Vec<char>]) {
-    let char = rows[x][y];
+fn move_arrow(x: usize, y: usize, grid: &[Vec<char>]) -> bool {
+    let char = grid[x][y];
     match char {
-        '^' => try_to_move_up(),
-        '>' => try_to_move_right(),
-        'v' => try_to_move_down(),
-        '<' => try_to_move_left(),
+        '^' => square_is_available(grid[x - 1][y]),
+
+        '>' => square_is_available(grid[x][y + 1]),
+
+        'v' => square_is_available(grid[x + 1][y]),
+
+        '<' => square_is_available(grid[x][y - 1]),
         _ => panic!("how??"),
     }
 }
 
-fn try_to_move_left() {
+fn turn_arrow() {
     todo!()
 }
 
-fn try_to_move_right() {
-    todo!()
+fn next_move_is_out_of_bounds(x: usize, y: usize, grid: &[Vec<char>]) -> bool {
+    match grid[x][y] {
+        '^' => x == 0,
+        '>' => y == grid[0].len() - 1,
+        'v' => x == grid.len() - 1,
+        '<' => y == 0,
+        _ => panic!("wrong coordinates for the character"),
+    }
 }
 
-fn try_to_move_down() {
-    todo!()
-}
-
-fn try_to_move_up() {
-    todo!()
-}
-
-fn is_guard(char: &char) -> bool {
+fn is_arrow(char: &char) -> bool {
     char == &'^' || char == &'v' || char == &'<' || char == &'>'
+}
+
+fn square_is_available(char: char) -> bool {
+    match char {
+        '.' | 'X' => true,
+        '#' => false,
+        _ => {
+            panic!("there shouldn't be other than . and # characters")
+        }
+    }
+}
+
+fn count_number_of_X(grid: &[Vec<char>]) -> i32 {
+    32
 }

@@ -3,14 +3,14 @@ use file_reader::read_text_file;
 fn main() {
     let contents = read_text_file();
     let mut total = 0;
-    let rows: Vec<Vec<char>> = contents
+    let grid: Vec<Vec<char>> = contents
         .lines()
         .map(|line| line.chars().collect())
         .collect();
 
-    for (i, row) in rows.iter().enumerate() {
+    for (i, row) in grid.iter().enumerate() {
         for (j, _) in row.iter().enumerate() {
-            if is_x_shaped_mas(&rows, i, j) {
+            if is_x_shaped_mas(&grid, i, j) {
                 total += 1
             }
         }
@@ -21,15 +21,15 @@ fn main() {
 }
 
 #[allow(clippy::nonminimal_bool)]
-fn is_x_shaped_mas(rows: &[Vec<char>], i: usize, j: usize) -> bool {
-    if rows[i][j] != 'A' || i == 0 || j == 0 || i + 1 >= rows.len() || j + 1 >= rows[0].len() {
+fn is_x_shaped_mas(grid: &[Vec<char>], i: usize, j: usize) -> bool {
+    if grid[i][j] != 'A' || i == 0 || j == 0 || i + 1 >= grid.len() || j + 1 >= grid[0].len() {
         return false;
     }
 
     let top_left_to_bottom_right =
-        is_mas_forwards_or_backwards(&rows[i - 1][j - 1], &rows[i + 1][j + 1]);
+        is_mas_forwards_or_backwards(&grid[i - 1][j - 1], &grid[i + 1][j + 1]);
     let bottom_left_to_top_right =
-        is_mas_forwards_or_backwards(&rows[i + 1][j - 1], &rows[i - 1][j + 1]);
+        is_mas_forwards_or_backwards(&grid[i + 1][j - 1], &grid[i - 1][j + 1]);
 
     top_left_to_bottom_right && bottom_left_to_top_right
 }
