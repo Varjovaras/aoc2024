@@ -28,6 +28,7 @@ fn main() {
         dbg!(y);
         dbg!(grid[x][y]);
         if next_move_is_out_of_bounds(x, y, &grid) {
+            grid[x][y] = 'X';
             break;
         }
         if move_arrow(x, y, &grid) {
@@ -53,12 +54,14 @@ fn main() {
                     y -= 1;
                 }
                 _ => {
-                    panic!("??")
+                    panic!("should never happen")
                 }
             }
+        } else {
+            grid[x][y] = turn_arrow(grid[x][y])
         }
     }
-    println!("{:?}", count_number_of_X(&grid));
+    println!("{:?}", count_number_of_visited_squares(&grid));
 }
 
 fn move_arrow(x: usize, y: usize, grid: &[Vec<char>]) -> bool {
@@ -75,8 +78,16 @@ fn move_arrow(x: usize, y: usize, grid: &[Vec<char>]) -> bool {
     }
 }
 
-fn turn_arrow() {
-    todo!()
+fn turn_arrow(char: char) -> char {
+    match char {
+        '^' => '>',
+        '>' => 'v',
+        'v' => '<',
+        '<' => '^',
+        _ => {
+            panic!("Should not happen!!")
+        }
+    }
 }
 
 fn next_move_is_out_of_bounds(x: usize, y: usize, grid: &[Vec<char>]) -> bool {
@@ -103,6 +114,14 @@ fn square_is_available(char: char) -> bool {
     }
 }
 
-fn count_number_of_X(grid: &[Vec<char>]) -> i32 {
-    32
+fn count_number_of_visited_squares(grid: &[Vec<char>]) -> i32 {
+    let mut total = 0;
+    for row in grid {
+        for char in row {
+            if char == &'X' {
+                total += 1;
+            }
+        }
+    }
+    total
 }
