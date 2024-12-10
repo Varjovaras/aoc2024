@@ -9,48 +9,54 @@ fn main() {
         .map(|line| line.chars().collect())
         .collect();
 
-    let arrow_coordinates: Option<(usize, usize)> = grid.iter().enumerate().find_map(|(i, row)| {
-        row.iter().enumerate().find_map(
-            |(j, char)| {
-                if is_arrow(char) {
-                    Some((i, j))
-                } else {
-                    None
-                }
-            },
-        )
-    });
+    let (mut x, mut y) = find_coordinates(&grid).unwrap();
+    let mut total = 0;
 
-    let (mut x, mut y) = arrow_coordinates.unwrap();
-
-    loop {
-        dbg!(x);
-        dbg!(y);
-        dbg!(grid[x][y]);
-        if next_move_is_out_of_bounds(x, y, &grid) {
-            grid[x][y] = 'X';
-            break;
+    for i in 0..grid.len() {
+        for j in 0..grid[0].len() {
+            let original_char = grid[i][j];
+            if !is_arrow(&original_char) {
+                grid[i][j] = '#'
+            };
+            if !game_completes(&grid) {
+                total += 1;
+            }
+            grid[i][j] = original_char;
         }
-        if move_arrow(x, y, &grid) {
-            match grid[x][y] {
+    }
+    println!("{}", total);
+}
+
+fn game_completes(grid: &[Vec<char>]) -> bool {
+    let (mut x, mut y) = find_coordinates(grid).unwrap();
+
+    let mut new_grid = grid.to_owned();
+
+    for i in 0..100_000 {
+        if next_move_is_out_of_bounds(x, y, &new_grid) {
+            new_grid[x][y] = 'X';
+            return true;
+        }
+        if move_arrow(x, y, &new_grid) {
+            match new_grid[x][y] {
                 '^' => {
-                    grid[x - 1][y] = '^';
-                    grid[x][y] = 'X';
+                    new_grid[x - 1][y] = '^';
+                    new_grid[x][y] = 'X';
                     x -= 1;
                 }
                 '>' => {
-                    grid[x][y + 1] = '>';
-                    grid[x][y] = 'X';
+                    new_grid[x][y + 1] = '>';
+                    new_grid[x][y] = 'X';
                     y += 1;
                 }
                 'v' => {
-                    grid[x + 1][y] = 'v';
-                    grid[x][y] = 'X';
+                    new_grid[x + 1][y] = 'v';
+                    new_grid[x][y] = 'X';
                     x += 1;
                 }
                 '<' => {
-                    grid[x][y - 1] = '<';
-                    grid[x][y] = 'X';
+                    new_grid[x][y - 1] = '<';
+                    new_grid[x][y] = 'X';
                     y -= 1;
                 }
                 _ => {
@@ -58,10 +64,10 @@ fn main() {
                 }
             }
         } else {
-            grid[x][y] = turn_arrow(grid[x][y])
+            new_grid[x][y] = turn_arrow(new_grid[x][y])
         }
     }
-    println!("{:?}", count_number_of_visited_squares(&grid));
+    false
 }
 
 fn move_arrow(x: usize, y: usize, grid: &[Vec<char>]) -> bool {
@@ -96,7 +102,7 @@ fn next_move_is_out_of_bounds(x: usize, y: usize, grid: &[Vec<char>]) -> bool {
         '>' => y == grid[0].len() - 1,
         'v' => x == grid.len() - 1,
         '<' => y == 0,
-        _ => panic!("wrong coordinates for the character"),
+        _ => panic!("Wrong coordinates for the character"),
     }
 }
 
@@ -114,7 +120,22 @@ fn square_is_available(char: char) -> bool {
     }
 }
 
-fn count_number_of_visited_squares(grid: &[Vec<char>]) -> i32 {
+fn find_coordinates(grid: &[Vec<char>]) -> Option<(usize, usize)> {
+    grid.iter().enumerate().find_map(|(i, row)| {
+        row.iter().enumerate().find_map(
+            |(j, char)| {
+                if is_arrow(char) {
+                    Some((i, j))
+                } else {
+                    None
+                }
+            },
+        )
+    })
+}
+
+//Solution 1
+fn _count_number_of_visited_squares(grid: &[Vec<char>]) -> i32 {
     let mut total = 0;
     for row in grid {
         for char in row {
