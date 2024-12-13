@@ -1,4 +1,3 @@
-#![allow(unused_variables, unused_mut)]
 use file_reader::read_text_file;
 
 fn main() {
@@ -8,7 +7,6 @@ fn main() {
         .filter(|s| s.contains('|'))
         .map(|s| {
             let parts: Vec<&str> = s.split('|').collect();
-            let parts: Vec<&str> = s.split('|').collect();
             (
                 parts[0].parse().expect("Failed to parse first number"),
                 parts[1].parse().expect("Failed to parse second number"),
@@ -16,7 +14,7 @@ fn main() {
         })
         .collect();
 
-    let lists: Vec<Vec<i32>> = contents
+    let mut lists: Vec<Vec<i32>> = contents
         .split_whitespace()
         .filter(|s| s.contains(','))
         .map(|s| {
@@ -28,35 +26,58 @@ fn main() {
 
     let mut total = 0;
 
-    for list in &lists {
-        if list_is_valid(list, &rules) {
-            total += list[list.len() / 2];
+    loop {
+        if lists.iter().all(|list| list_is_valid(list, &rules)) {
+            break;
         }
-        else {
-            fn fix_list()
-        }
+        (0..lists.len()).for_each(|i| {
+            if !list_is_valid(&lists[i], &rules) {
+                lists[i] = fix_list(&lists[i], &rules);
+                total += lists[i][lists[i].len() / 2]
+            }
+        });
     }
+
+    // SOLUTION 1
+    // for (i, list) in lists.iter().enumerate() {
+    //     if list_is_valid(list, &rules) {
+    //         // total += list[list.len() / 2];
+    //     }
+    // }
 
     println!("TOTAL: {}", total);
 }
 
-fn fix_list(list: &[i32], rules: &[(i32, i32)]) -> Vec<(i32,i32)> {
-    for (i, &num) in list.iter().enumerate() {
+fn fix_list(list: &[i32], rules: &[(i32, i32)]) -> Vec<i32> {
+    let mut new_list = list.to_vec();
+    let mut i = 0;
+
+    while !list_is_valid(&new_list, rules) {
         let new_rules: Vec<(i32, i32)> = rules
             .iter()
-            .filter(|&&rule| rule.0 == num)
+            .filter(|&&rule| rule.0 == new_list[i])
             .cloned()
             .collect();
 
-        for &j in &list[0..i] {
-            if new_rules.iter().any(|&rule| rule == (num, j)) {
-                return false;
+        let mut swapped = false;
+        for (j, &value) in new_list[0..i].iter().enumerate() {
+            if new_rules.iter().any(|&rule| rule == (new_list[i], value)) {
+                new_list.swap(i, j);
+                swapped = true;
+                break;
             }
         }
-    }
-    true
-}
 
+        if !swapped {
+            i += 1;
+        }
+        if i == list.len() {
+            i = 0;
+        }
+    }
+
+    new_list.to_vec()
+}
 
 fn list_is_valid(list: &[i32], rules: &[(i32, i32)]) -> bool {
     for (i, &num) in list.iter().enumerate() {
