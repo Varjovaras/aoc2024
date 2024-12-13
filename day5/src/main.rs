@@ -32,10 +32,31 @@ fn main() {
         if list_is_valid(list, &rules) {
             total += list[list.len() / 2];
         }
+        else {
+            fn fix_list()
+        }
     }
 
     println!("TOTAL: {}", total);
 }
+
+fn fix_list(list: &[i32], rules: &[(i32, i32)]) -> Vec<(i32,i32)> {
+    for (i, &num) in list.iter().enumerate() {
+        let new_rules: Vec<(i32, i32)> = rules
+            .iter()
+            .filter(|&&rule| rule.0 == num)
+            .cloned()
+            .collect();
+
+        for &j in &list[0..i] {
+            if new_rules.iter().any(|&rule| rule == (num, j)) {
+                return false;
+            }
+        }
+    }
+    true
+}
+
 
 fn list_is_valid(list: &[i32], rules: &[(i32, i32)]) -> bool {
     for (i, &num) in list.iter().enumerate() {
