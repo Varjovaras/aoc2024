@@ -26,72 +26,66 @@ fn main() {
 
     let mut total = 0;
 
-    loop {
-        if lists.iter().all(|list| list_is_valid(list, &rules)) {
-            break;
-        }
+    while !lists.iter().all(|list| list_is_valid(list, &rules)) {
         (0..lists.len()).for_each(|i| {
             if !list_is_valid(&lists[i], &rules) {
                 lists[i] = fix_list(&lists[i], &rules);
                 total += lists[i][lists[i].len() / 2]
             }
         });
+
+        // SOLUTION 1
+        // for (i, list) in lists.iter().enumerate() {
+        //     if list_is_valid(list, &rules) {
+        //         // total += list[list.len() / 2];
+        //     }
+        // }
+
+        println!("TOTAL: {}", total);
     }
 
-    // SOLUTION 1
-    // for (i, list) in lists.iter().enumerate() {
-    //     if list_is_valid(list, &rules) {
-    //         // total += list[list.len() / 2];
-    //     }
-    // }
+    fn fix_list(list: &[i32], rules: &[(i32, i32)]) -> Vec<i32> {
+        let mut new_list = list.to_vec();
+        let mut i = 0;
 
-    println!("TOTAL: {}", total);
-}
+        while !list_is_valid(&new_list, rules) {
+            let new_rules: Vec<(i32, i32)> = rules
+                .iter()
+                .filter(|&&rule| rule.0 == new_list[i])
+                .cloned()
+                .collect();
 
-fn fix_list(list: &[i32], rules: &[(i32, i32)]) -> Vec<i32> {
-    let mut new_list = list.to_vec();
-    let mut i = 0;
+            let mut swapped = false;
+            for (j, &value) in new_list[0..i].iter().enumerate() {
+                if new_rules.iter().any(|&rule| rule == (new_list[i], value)) {
+                    new_list.swap(i, j);
+                    swapped = true;
+                    break;
+                }
+            }
 
-    while !list_is_valid(&new_list, rules) {
-        let new_rules: Vec<(i32, i32)> = rules
-            .iter()
-            .filter(|&&rule| rule.0 == new_list[i])
-            .cloned()
-            .collect();
-
-        let mut swapped = false;
-        for (j, &value) in new_list[0..i].iter().enumerate() {
-            if new_rules.iter().any(|&rule| rule == (new_list[i], value)) {
-                new_list.swap(i, j);
-                swapped = true;
-                break;
+            if !swapped {
+                i += 1;
             }
         }
 
-        if !swapped {
-            i += 1;
-        }
-        if i == list.len() {
-            i = 0;
-        }
+        new_list.to_vec()
     }
 
-    new_list.to_vec()
-}
+    fn list_is_valid(list: &[i32], rules: &[(i32, i32)]) -> bool {
+        for (i, &num) in list.iter().enumerate() {
+            let new_rules: Vec<(i32, i32)> = rules
+                .iter()
+                .filter(|&&rule| rule.0 == num)
+                .cloned()
+                .collect();
 
-fn list_is_valid(list: &[i32], rules: &[(i32, i32)]) -> bool {
-    for (i, &num) in list.iter().enumerate() {
-        let new_rules: Vec<(i32, i32)> = rules
-            .iter()
-            .filter(|&&rule| rule.0 == num)
-            .cloned()
-            .collect();
-
-        for &j in &list[0..i] {
-            if new_rules.iter().any(|&rule| rule == (num, j)) {
-                return false;
+            for &j in &list[0..i] {
+                if new_rules.iter().any(|&rule| rule == (num, j)) {
+                    return false;
+                }
             }
         }
+        true
     }
-    true
 }
