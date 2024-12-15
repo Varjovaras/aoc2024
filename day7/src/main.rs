@@ -52,10 +52,7 @@ fn line_is_true(line: &InputData) -> bool {
     }
 
     for comb_string in comb_strings {
-        // dbg!(line.key);
-        let tot = get_total(comb_string);
-        // dbg!(&tot);
-        if line.key == tot.unwrap() {
+        if line.key == get_total(comb_string).unwrap() {
             return true;
         }
     }
@@ -70,6 +67,13 @@ fn get_total(vec: Vec<String>) -> Result<i64, String> {
         match vec[i + 1].as_ref() {
             "+" => total += vec[i + 2].parse::<i64>().unwrap(),
             "*" => total *= vec[i + 2].parse::<i64>().unwrap(),
+            "|" => {
+                let left_side = total.to_string();
+                let right_side = &vec[i + 2];
+                let combined_numbers = left_side + right_side;
+                total = combined_numbers.parse::<i64>().unwrap();
+            }
+
             _ => return Err("Incorrect operator".to_string()),
         }
         i += 2;
@@ -79,7 +83,7 @@ fn get_total(vec: Vec<String>) -> Result<i64, String> {
 
 fn generate_operator_strings(num_numbers: usize) -> Vec<String> {
     let mut combinations = Vec::new();
-    let operators = vec!['+', '*'];
+    let operators = vec!['+', '*', '|'];
 
     let num_operators = num_numbers - 1;
 
@@ -105,7 +109,6 @@ fn generate_combinations(
         return;
     }
 
-    // Recursively try each operator
     for &op in operators {
         current_combination.push(op);
         generate_combinations(operators, current_combination, num_operators, combinations);
