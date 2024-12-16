@@ -20,7 +20,7 @@ fn main() {
             _ => {}
         }
     }
-    println!("{}", total);
+    println!("{total}");
 }
 
 fn is_do_command(chars: &[char], index: usize) -> bool {
@@ -54,8 +54,12 @@ fn increment_total(index: usize, chars: &[char]) -> i32 {
                 check_second_number = true;
             }
             &')' if check_second_number && !second_number_as_string.is_empty() => {
-                let mul = first_number_as_string.parse::<i32>().unwrap()
-                    * second_number_as_string.parse::<i32>().unwrap();
+                let mul = first_number_as_string
+                    .parse::<i32>()
+                    .expect("first number didnt parse into i32")
+                    * second_number_as_string
+                        .parse::<i32>()
+                        .expect("second number didnt parse into i32");
                 total += mul;
                 break;
             }

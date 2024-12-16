@@ -6,7 +6,7 @@ fn main() {
         .lines()
         .map(|line| {
             line.split_whitespace()
-                .map(|part| part.parse().unwrap())
+                .map(|part| part.parse().expect(""))
                 .collect()
         })
         .collect();
@@ -18,7 +18,7 @@ fn main() {
         }
     }
 
-    println!("{}", total_safe_reports);
+    println!("{total_safe_reports}");
 }
 
 fn is_report_safe(report: &[i32]) -> bool {

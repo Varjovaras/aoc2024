@@ -26,9 +26,9 @@ fn parse_input_file() -> Vec<InputData> {
             .trim()
             .parse::<i64>()
             .expect("integer expected as key");
-        let values: Result<Vec<i64>, _> = parts[1].split_whitespace().map(|s| s.parse()).collect();
+        let values: Result<Vec<i64>, _> = parts[1].split_whitespace().map(str::parse).collect();
         if let Ok(v) = values {
-            input_data.push(InputData { key, values: v })
+            input_data.push(InputData { key, values: v });
         }
     }
     input_data
@@ -53,12 +53,12 @@ fn generate_and_check(
     let new_total = if depth == 0 {
         line.values[0]
     } else {
-        match current_combination[depth - 1] {
-            '+' => current_total + line.values[depth],
-            '*' => current_total * line.values[depth],
-            '|' => format!("{}{}", current_total, line.values[depth])
+        match current_combination.get(depth - 1) {
+            Some('+') => current_total + line.values[depth],
+            Some('*') => current_total * line.values[depth],
+            Some('|') => format!("{}{}", current_total, line.values[depth])
                 .parse::<i64>()
-                .unwrap(),
+                .expect(""),
             _ => unreachable!(),
         }
     };

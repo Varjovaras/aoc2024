@@ -11,13 +11,12 @@ fn main() {
     for (i, row) in grid.iter().enumerate() {
         for (j, _) in row.iter().enumerate() {
             if is_x_shaped_mas(&grid, i, j) {
-                total += 1
+                total += 1;
             }
         }
     }
 
-    println!("{}", total);
-    dbg!(total);
+    println!("{total}");
 }
 
 #[allow(clippy::nonminimal_bool)]
@@ -27,13 +26,13 @@ fn is_x_shaped_mas(grid: &[Vec<char>], i: usize, j: usize) -> bool {
     }
 
     let top_left_to_bottom_right =
-        is_mas_forwards_or_backwards(&grid[i - 1][j - 1], &grid[i + 1][j + 1]);
+        is_mas_forwards_or_backwards(grid[i - 1][j - 1], grid[i + 1][j + 1]);
     let bottom_left_to_top_right =
-        is_mas_forwards_or_backwards(&grid[i + 1][j - 1], &grid[i - 1][j + 1]);
+        is_mas_forwards_or_backwards(grid[i + 1][j - 1], grid[i - 1][j + 1]);
 
     top_left_to_bottom_right && bottom_left_to_top_right
 }
 
-fn is_mas_forwards_or_backwards(first: &char, second: &char) -> bool {
-    first == &'S' && second == &'M' || first == &'M' && second == &'S'
+const fn is_mas_forwards_or_backwards(first: char, second: char) -> bool {
+    first == 'S' && second == 'M' || first == 'M' && second == 'S'
 }

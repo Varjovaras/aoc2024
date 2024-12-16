@@ -34,5 +34,5 @@ fn main() {
         similarity_score += i * occurences;
     }
 
-    println!("{}", similarity_score);
+    println!("{similarity_score}");
 }
