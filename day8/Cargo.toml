@@ -5,3 +5,11 @@ edition = "2021"
 
 [dependencies]
 file_reader = { path = "../file_reader" }
+
+[lints.clippy]
+all = "warn"
+pedantic = "warn"
+complexity = "warn"
+correctness = "deny"
+perf = "warn"
+style = "warn"
