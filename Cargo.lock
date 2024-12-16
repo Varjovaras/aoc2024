@@ -56,5 +56,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "day8"
+version = "0.1.0"
+dependencies = [
+ "file_reader",
+]
+
+[[package]]
 name = "file_reader"
 version = "0.1.0"
