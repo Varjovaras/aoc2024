@@ -20,7 +20,6 @@ fn main() {
 fn parse_input_file() -> Vec<InputData> {
     let contents = read_text_file();
     let mut input_data: Vec<InputData> = vec![];
-
     for line in contents.lines() {
         let parts: Vec<&str> = line.split(':').collect();
         let key = parts[0]
@@ -32,86 +31,54 @@ fn parse_input_file() -> Vec<InputData> {
             input_data.push(InputData { key, values: v })
         }
     }
-
     input_data
 }
 
 fn line_is_true(line: &InputData) -> bool {
-    let operator_combinations: Vec<String> = generate_operator_strings(line.values.len());
-    let mut comb_strings: Vec<Vec<String>> = vec![];
-    for operator_combination in operator_combinations {
-        let mut str: Vec<String> = vec![];
-        for i in 0..line.values.len() {
-            str.push(line.values[i].to_string());
-            if i < operator_combination.len() {
-                str.push(operator_combination.chars().nth(i).unwrap().into());
-            }
-        }
-
-        comb_strings.push(str);
-    }
-
-    for comb_string in comb_strings {
-        if line.key == get_total(comb_string).unwrap() {
-            return true;
-        }
-    }
-
-    false
-}
-
-fn get_total(vec: Vec<String>) -> Result<i64, String> {
-    let mut total = vec.first().unwrap().parse::<i64>().ok().unwrap();
-    let mut i = 0;
-    while i + 2 < vec.len() {
-        match vec[i + 1].as_ref() {
-            "+" => total += vec[i + 2].parse::<i64>().unwrap(),
-            "*" => total *= vec[i + 2].parse::<i64>().unwrap(),
-            "|" => {
-                let left_side = total.to_string();
-                let right_side = &vec[i + 2];
-                let combined_numbers = left_side + right_side;
-                total = combined_numbers.parse::<i64>().unwrap();
-            }
-
-            _ => return Err("Incorrect operator".to_string()),
-        }
-        i += 2;
-    }
-    Ok(total)
-}
-
-fn generate_operator_strings(num_numbers: usize) -> Vec<String> {
-    let mut combinations = Vec::new();
-    let operators = vec!['+', '*', '|'];
-
-    let num_operators = num_numbers - 1;
-
     let mut current_combination = Vec::new();
-    generate_combinations(
-        &operators,
-        &mut current_combination,
-        num_operators,
-        &mut combinations,
-    );
-
-    combinations
+    generate_and_check(line, &mut current_combination, 0, 0)
 }
 
-fn generate_combinations(
-    operators: &[char],
+//recursively check possible combinations and early return if any match total
+fn generate_and_check(
+    line: &InputData,
     current_combination: &mut Vec<char>,
-    num_operators: usize,
-    combinations: &mut Vec<String>,
-) {
-    if current_combination.len() == num_operators {
-        combinations.push(current_combination.iter().collect());
-        return;
+    current_total: i64,
+    depth: usize,
+) -> bool {
+    if depth == line.values.len() {
+        return current_total == line.key;
     }
 
-    for &op in operators {
-        current_combination.push(op);
-        generate_combinations(operators, current_combination, num_operators, combinations);
-        current_combination.pop();
+    let new_total = if depth == 0 {
+        line.values[0]
+    } else {
+        match current_combination[depth - 1] {
+            '+' => current_total + line.values[depth],
+            '*' => current_total * line.values[depth],
+            '|' => format!("{}{}", current_total, line.values[depth])
+                .parse::<i64>()
+                .unwrap(),
+            _ => unreachable!(),
+        }
+    };
+
+    if new_total > line.key {
+        return false;
+    }
+
+    let operators = ['+', '*', '|'];
+
+    if depth < line.values.len() - 1 {
+        for &op in &operators {
+            current_combination.push(op);
+            if generate_and_check(line, current_combination, new_total, depth + 1) {
+                return true;
+            }
+            current_combination.pop();
+        }
+        false
+    } else {
+        new_total == line.key
     }
 }
